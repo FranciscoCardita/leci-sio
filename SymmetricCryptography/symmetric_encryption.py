@@ -2,17 +2,12 @@ from secrets import token_bytes
 import sys
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
+import base64
 
 def symmetric_encryption(key, iv, msg):
     cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
     encryptor = cipher.encryptor()
     output = encryptor.update(msg) + encryptor.finalize()
-    return output
-
-def symmetric_decryption(key, iv, encrypted_msg_arr):
-    cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
-    decryptor = cipher.decryptor()
-    output = decryptor.update(encrypted_msg_arr) + decryptor.finalize()
     return output
 
 def main():
@@ -36,17 +31,11 @@ def main():
     with open(sys.argv[2], "wb") as output_file:
         output_file.write(encrypted_msg)
 
-    decrypted_msg_arr = []
-    with open(sys.argv[2], 'rb') as input_file:
-        while message := input_file.read(16):
-            output = symmetric_decryption(key,iv,message)
-            decrypted_msg_arr.append(output)
-    unpadder = padding.PKCS7(128).unpadder()
-    decrypted_msg_arr[-1] = unpadder.update(decrypted_msg_arr[-1]) + unpadder.finalize()
-    decrypted_msg = b''.join(decrypted_msg_arr).decode("utf-8")
+    with open("key.txt", "w") as key_file:
+        key_file.write(base64.b64encode(key).decode("ASCII") + '\n')
+        key_file.write(base64.b64encode(iv).decode("ASCII"))
 
-    print("Encrypted message: ", encrypted_msg)
-    print("\nDecrypted message: ", decrypted_msg)
+    print("\nEncrypted message: ", encrypted_msg)
 
 if __name__ == "__main__":
     main()
