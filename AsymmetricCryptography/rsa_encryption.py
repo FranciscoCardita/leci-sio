@@ -19,8 +19,7 @@ def main(public_key):
             label=None
         )
     )
-    print(ciphertext)
-
+    
     with open("rsa_encrypted.txt", 'wb') as output:
         output.write(ciphertext)
 
