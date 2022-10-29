@@ -1,30 +1,40 @@
 import argparse
-from cryptography.hazmat.primitives import hashes
+from email import message
+from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
-from cryptography.hazmat.primitives import serialization
 
-def main(public_key):
+def main(args):
+
+    msg = args["file_name"]
+    public_key = args["public_key"]
+    output = args["output"]
         
     with open(public_key, 'rb') as input_file:
         pub_key = serialization.load_pem_public_key(
             input_file.read(),
         )
-
-    message = b"encrypted data"
-    ciphertext = pub_key.encrypt(
-        message,
-        padding.OAEP(
-            mgf=padding.MGF1(algorithm=hashes.SHA256()),
-            algorithm=hashes.SHA256(),
-            label=None
-        )
-    )
     
-    with open("rsa_encrypted.txt", 'wb') as output:
-        output.write(ciphertext)
+    key_size = (pub_key.key_size + 7) // 8
+    ciphertext = []
+    with open(msg, 'rb') as input_file:
+        while message := input_file.read(key_size - 66):
+            ciphertext.append(pub_key.encrypt(
+                message,
+                padding.OAEP(
+                    mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                    algorithm=hashes.SHA256(),
+                    label=None
+                ))
+            )
+
+    with open(output, 'wb') as output_file:
+        for c in ciphertext:
+            output_file.write(c)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("-f", "--file_name", required=True, help="<file_name>.txt")
     parser.add_argument("-pk", "--public_key", required=True, help="<file_name>.pem")
-    public_key = vars(parser.parse_args())["public_key"]
-    main(public_key)
+    parser.add_argument("-o", "--output", default="rsa_encrypted.txt", help="<output_name>.txt")
+    args = vars(parser.parse_args())
+    main(args)
