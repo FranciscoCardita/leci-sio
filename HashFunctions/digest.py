@@ -1,5 +1,4 @@
 from cryptography.hazmat.primitives import hashes
-import os
 import sys
 import binascii
 
@@ -15,6 +14,7 @@ def calculate(fname):
 def main():
     if len(sys.argv) != 2:
         print("Usage: python digest.py <file_name>")
+        sys.exit(1)
 
     for fname in sys.argv[1:]:
         hd = binascii.hexlify(calculate(fname))
