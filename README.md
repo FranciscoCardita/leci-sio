@@ -1,5 +1,5 @@
-## Information And Organisational Security
+## Segurança Informática e Nas Organizações
 
-Possible solutions to exercises given during [`IOS`](https://www.ua.pt/pt/uc/4143) classes in *Universidade de Aveiro*, using `Python`.
+Possíveis soluções dos guiões lecionados nas aulas de [`SIO`](https://www.ua.pt/pt/uc/4143) na Universidade de Aveiro.
 
-> These are merely demos as they may contain errors and bad practices.
+> Estas resoluções podem conter erros e más práticas.
